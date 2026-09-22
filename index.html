@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Gyanii Jii!</title>
+    
+    <!-- Google Fonts: Playfair Display, Poppins, Caveat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS for responsive layout scaffolding -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Canvas Confetti for the explosion effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-glow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+            --neon-accent: #c5a3ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Prevent native scroll, handle sections dynamically */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1, h2, h3, .heading-font {
+            font-family: 'Playfair Display', serif;
+            text-shadow: var(--text-glow);
+        }
+
+        .handwritten {
+            font-family: 'Caveat', cursive;
+        }
+
+        #star-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a1c23 0%, var(--bg-color) 100%);
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.6);
+            animation: twinkle var(--duration) infinite alternate ease-in-out, drift var(--drift-duration) infinite linear;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.3); }
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0) translateX(0); }
+            to { transform: translateY(-50px) translateX(20px); }
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 12px 32px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(197, 163, 255, 0.2);
+            text-shadow: 0 0 5px rgba(255,255,255,0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .glass-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 25px rgba(197, 163, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-btn:hover::before { left: 150%; }
+
+        .section-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transform: scale(0.95);
+            padding: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .section-container::-webkit-scrollbar { display: none; }
+
+        .section-container.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            z-index: 5;
+        }
+
+        .cake-container {
+            position: relative;
+            width: 280px;
+            height: 220px;
+            margin-bottom: 50px;
+            margin-top: 30px;
+        }
+
+        .cake-tier {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 15px;
+            /* Ultra-realistic gradient for 3D fondant look */
+            background: linear-gradient(to right, #4a2533, #8a4860 15%, #b3637e 50%, #8a4860 85%, #4a2533);
+            box-shadow: 
+                inset 0 15px 15px rgba(255, 255, 255, 0.2), 
+                inset 0 -15px 25px rgba(0, 0, 0, 0.4),
+                0 15px 25px rgba(0,0,0,0.6);
+        }
+
+        .tier-bottom { width: 240px; height: 90px; bottom: 0; z-index: 1; }
+        .tier-top { width: 170px; height: 80px; bottom: 80px; z-index: 2; }
+
+        /* Icing Drips */
+        .icing {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 35px;
+            background: linear-gradient(to bottom, #fff, #f0e6eb);
+            border-radius: 15px 15px 50% 50% / 15px 15px 20px 20px;
+            box-shadow: 0 8px 10px rgba(0,0,0,0.2);
+        }
+
+        .icing::after {
+            content: '';
+            position: absolute;
+            top: 20px; left: 5%;
+            width: 90%; height: 30px;
+            background: radial-gradient(circle at 12px 12px, #f0e6eb 14px, transparent 15px);
+            background-size: 24px 30px;
+            background-repeat: repeat-x;
+        }
+
+        /* Candles & Flames */
+        .candles {
+            position: absolute;
+            bottom: 155px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 3;
+        }
+
+        .candle {
+            position: relative;
+            width: 14px;
+            height: 55px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #c5a3ff 5px, #c5a3ff 10px);
+            border-radius: 4px;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.4), inset -2px -2px 5px rgba(0,0,0,0.2);
+            align-self: flex-end;
+        }
+        
+        .candle:nth-child(2) { height: 65px; margin-bottom: 8px;}
+
+        .flame {
+            position: absolute;
+            top: -30px; left: 50%;
+            transform: translateX(-50%);
+            width: 16px; height: 32px;
+            background: #ffdb58;
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            box-shadow: 
+                0 0 15px rgba(255, 200, 0, 0.9),
+                0 0 30px rgba(255, 140, 0, 0.7),
+                0 0 45px rgba(255, 0, 0, 0.5),
+                inset 0 0 5px rgba(255, 255, 255, 0.9);
+            transform-origin: center bottom;
+            animation: flicker 0.1s infinite alternate;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-3deg); opacity: 0.9; }
+            50% { transform: translateX(-50%) scale(1.05) rotate(0deg); opacity: 1; }
+            100% { transform: translateX(-50%) scale(0.95) rotate(3deg); opacity: 0.85; }
+        }
+
+        .flame.extinguished {
+            opacity: 0;
+            transform: translateX(-50%) scale(0) translateY(10px);
+            animation: none;
+        }
+
+        .balloon-wrapper {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 90px; height: 115px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            /* Shiny reflection */
+            box-shadow: inset -15px -15px 25px rgba(0,0,0,0.5), 0 15px 25px rgba(0,0,0,0.4);
+            animation: floatUp var(--b-dur) infinite ease-in-out alternate;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            bottom: -150px;
+        }
+
+        .balloon-gold { background: radial-gradient(circle at 30% 20%, #fff 1%, #ffda44 15%, #997a00 80%); }
+        .balloon-purple { background: radial-gradient(circle at 30% 20%, #fff 1%, #d084ff 15%, #4a0080 80%); }
+        .balloon-silver { background: radial-gradient(circle at 30% 20%, #fff 1%, #e0e0e0 15%, #555555 80%); }
+
+        .balloon::before {
+            content: ''; position: absolute;
+            bottom: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 14px; height: 12px;
+            background: inherit;
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+        }
+        .balloon::after {
+            content: ''; position: absolute;
+            bottom: -80px; left: 50%;
+            transform: translateX(-50%);
+            width: 1px; height: 80px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(-5deg); }
+            100% { transform: translateY(-120vh) rotate(5deg); }
+        }
+
+        .balloon.popped {
+            transform: scale(0) !important;
+            opacity: 0 !important;
+        }
+
+        .collage-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 900px;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+
+        .polaroid {
+            background: rgba(255,255,255,0.95);
+            padding: 12px 12px 40px 12px;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 220px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #333;
+        }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 5px; left: 0; width: 100%;
+            text-align: center;
+            color: #111;
+            font-size: 1.5rem;
+        }
+
+        /* Scattered Effect */
+        .polaroid:nth-child(1) { transform: rotate(-8deg) translateY(10px); }
+        .polaroid:nth-child(2) { transform: rotate(5deg) translateY(-10px); }
+        .polaroid:nth-child(3) { transform: rotate(-4deg) translateY(15px); }
+        .polaroid:nth-child(4) { transform: rotate(7deg) translateY(0); }
+
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg) translateY(-10px);
+            z-index: 20;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        .letter-paper {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.05);
+            color: #eee;
+            font-size: 1.8rem;
+            line-height: 1.6;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .heart {
+            background-color: var(--neon-accent);
+            display: inline-block;
+            height: 50px;
+            margin: 0 10px;
+            position: relative;
+            top: 0;
+            transform: rotate(-45deg);
+            width: 50px;
+            box-shadow: 0 0 20px var(--neon-accent);
+            animation: heartbeat 1.2s infinite;
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            background-color: var(--neon-accent);
+            border-radius: 50%;
+            height: 50px;
+            position: absolute;
+            width: 50px;
+            box-shadow: 0 0 20px var(--neon-accent);
+        }
+
+        .heart:before {
+            top: -25px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 25px;
+            top: 0;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1) rotate(-45deg); }
+            10% { transform: scale(1.2) rotate(-45deg); }
+            20% { transform: scale(1) rotate(-45deg); }
+            30% { transform: scale(1.3) rotate(-45deg); }
+            40% { transform: scale(1) rotate(-45deg); }
+            100% { transform: scale(1) rotate(-45deg); }
+        }
+
+        /* Utility for fade animations */
+        .fade-in { animation: fadeInAnim 1s forwards; }
+        @keyframes fadeInAnim {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="star-container"></div>
+
+    <!-- PAGE 1: CAKE -->
+    <div id="section-1" class="section-container active">
+        <h1 class="text-4xl md:text-6xl mb-6 text-center">Make a Wish...</h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-8 text-center max-w-md">Close your eyes, think of something beautiful, and blow out the candles.</p>
+        
+        <div class="cake-container">
+            <div class="cake-tier tier-bottom">
+                <div class="icing"></div>
+            </div>
+            <div class="cake-tier tier-top">
+                <div class="icing"></div>
+            </div>
+            
+            <div class="candles">
+                <div class="candle"><div class="flame"></div></div>
+                <div class="candle"><div class="flame"></div></div>
+                <div class="candle"><div class="flame"></div></div>
+            </div>
+        </div>
+
+        <button id="blowBtn" class="glass-btn mt-10" onclick="blowOutCandles()">Blow out candles!</button>
+    </div>
+
+    <!-- PAGE 2: HAPPY BIRTHDAY & BALLOONS -->
+    <div id="section-2" class="section-container">
+        <!-- Background balloons injected via JS -->
+        <div class="balloon-wrapper" id="balloons-bg"></div>
+
+        <h1 class="text-4xl md:text-6xl mb-10 text-center relative z-10" style="color: var(--neon-accent);">Happy Birthday Gyanii Jii!</h1>
+        
+        <div class="glass-panel p-6 md:p-8 flex flex-col md:flex-row gap-8 max-w-4xl w-full mx-4 relative z-10">
+            <!-- Image Placeholder -->
+            <div class="w-full md:w-1/2">
+                <img src="1.jpg" alt="Birthday Image" class="w-full h-64 md:h-80 object-cover rounded-xl shadow-lg border border-white/20">
+            </div>
+            <!-- Message Space -->
+            <div class="w-full md:w-1/2 flex flex-col justify-center">
+                <h2 class="text-3xl mb-4 heading-font">A Special Day</h2>
+                <p class="text-lg text-gray-200 mb-6 leading-relaxed">
+                    Wishing you the happiest of birthdays! May this year bring you as much joy, peace, and beautiful moments as you bring to the people around you. Keep slaying with your pretty soul
+                </p>
+                <div class="mt-auto">
+                    <button class="glass-btn w-full md:w-auto" onclick="burstAndContinue()">Burst Balloons & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3: MEMORY LANE -->
+    <div id="section-3" class="section-container">
+        <h1 class="text-4xl md:text-5xl mb-8 text-center heading-font">Down the memory lane</h1>
+        
+        <div class="collage-container">
+            <div class="polaroid">
+                <img src="8.jpeg" alt="Class 8th">
+                <p class="polaroid-caption handwritten">Class 8th</p>
+            </div>
+            <div class="polaroid">
+                <img src="9.jpeg" alt="Class 9th">
+                <p class="polaroid-caption handwritten">Class 9th</p>
+            </div>
+            <div class="polaroid">
+                <img src="10.jpg" alt="Class 10th">
+                <p class="polaroid-caption handwritten">Class 10th</p>
+            </div>
+            <div class="polaroid">
+                <img src="11.jpg" alt="Class 11th">
+                <p class="polaroid-caption handwritten">Class 11th</p>
+            </div>
+        </div>
+
+        <button class="glass-btn mt-8" onclick="showSection(4)">Read My Letter</button>
+    </div>
+
+    <!-- PAGE 4: LETTER -->
+    <div id="section-4" class="section-container">
+        <div class="letter-paper handwritten relative">
+            <p class="mb-4">Dear Gyanii Jii,</p>
+            <p class="mb-4">
+                You are very special to meee. From the days we first met until now, you've always been someone who have stayed with me whatever the situation maybe. I will always be grateful to god for giving me such a person in my school life
+            </p>
+            <p class="mb-4">
+                Thank you for always believing in me, the shared laughs, and for just being an amazing friend.Touchwood I hope humari dosti aise hi bani rahe
+            </p>
+            <p class="text-right mt-8">With lots of love,<br>Aapka Bilaa</p>
+        </div>
+        
+        <button class="glass-btn mt-12" onclick="showSection(5)">Final Surprise</button>
+    </div>
+
+    <!-- PAGE 5: CONCLUSION -->
+    <div id="section-5" class="section-container">
+        <h1 class="text-5xl md:text-7xl text-center heading-font mb-12">Thank You<br>for being you!</h1>
+        <div class="heart my-8"></div>
+        <p class="text-xl text-gray-300 mt-12 handwritten text-3xl">Happy Birthday.</p>
+    </div>
+
+    <script>
+        // --- 1. Starry Background Generator ---
+        function generateStars() {
+            const container = document.getElementById('star-container');
+            const starCount = 120;
+            for (let i = 0; i < starCount; i++) {
+                let star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                let size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 1}s`);
+                star.style.setProperty('--drift-duration', `${Math.random() * 20 + 15}s`);
+                container.appendChild(star);
+            }
+        }
+        generateStars();
+
+        // --- 2. Balloon Generator for Section 2 ---
+        function generateBalloons() {
+            const container = document.getElementById('balloons-bg');
+            const colors = ['balloon-gold', 'balloon-purple', 'balloon-silver'];
+            const balloonCount = 15;
+            
+            for (let i = 0; i < balloonCount; i++) {
+                let balloon = document.createElement('div');
+                let colorClass = colors[Math.floor(Math.random() * colors.length)];
+                balloon.className = `balloon ${colorClass}`;
+                
+                // Random positioning and animation timing
+                balloon.style.left = `${Math.random() * 90}%`;
+                balloon.style.setProperty('--b-dur', `${Math.random() * 5 + 7}s`);
+                balloon.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(balloon);
+            }
+        }
+        generateBalloons();
+
+        // --- 3. Section Navigation ---
+        function showSection(num) {
+            document.querySelectorAll('.section-container').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            document.getElementById(`section-${num}`).classList.add('active');
+        }
+
+        // --- 4. Interactive Cake Logic ---
+        function blowOutCandles() {
+            const flames = document.querySelectorAll('.flame');
+            flames.forEach(flame => {
+                flame.classList.add('extinguished');
+            });
+            
+            const btn = document.getElementById('blowBtn');
+            btn.style.opacity = '0';
+            btn.style.pointerEvents = 'none';
+
+            // Wait for smoke/extinguish effect, then change page
+            setTimeout(() => {
+                showSection(2);
+            }, 1500);
+        }
+
+        // --- 5. Balloon Bursting & Confetti Logic ---
+        function burstAndContinue() {
+            const balloons = document.querySelectorAll('.balloon');
+            
+            // Pop balloons rapidly
+            balloons.forEach((b, index) => {
+                setTimeout(() => {
+                    b.classList.add('popped');
+                }, index * 50);
+            });
+
+            // Trigger Confetti using canvas-confetti
+            var duration = 2000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#c5a3ff', '#ffffff', '#ffda44']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#c5a3ff', '#ffffff', '#ffda44']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Transition to memory lane after explosion
+            setTimeout(() => {
+                showSection(3);
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
